@@ -22,7 +22,15 @@ public class Product {
         this.category = category;
     }
 
-    // Getters và Setters
+    
+    
+    @Override
+	public String toString() {
+		return "Product [id=" + id + ", name=" + name + ", description=" + description + ", photo=" + photo + ", price="
+				+ price + ", discount=" + discount + ", category=" + category + "]";
+	}
+
+	// Getters và Setters
     public int getId() {
         return id;
     }

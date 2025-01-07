@@ -36,6 +36,28 @@ public class ProductDAO {
             e.printStackTrace();
         }
     }
+    public static void main(String[] args) {
+        ProductDAO dao = new ProductDAO();
+        try {
+            List<Product> products = dao.getAllProducts();
+            if (products.isEmpty()) {
+                System.out.println("Không có sản phẩm nào trong cơ sở dữ liệu.");
+            } else {
+                for (Product product : products) {
+                    System.out.println("ID: " + product.getId());
+                    System.out.println("Tên: " + product.getName());
+                    System.out.println("Mô tả: " + product.getDescription());
+                    System.out.println("Ảnh: " + product.getPhoto());
+                    System.out.println("Giá: " + product.getPrice());
+                    System.out.println("Giảm giá: " + product.getDiscount());
+                    System.out.println("Danh mục: " + (product.getCategory() != null ? product.getCategory().getTitle() : "Không rõ"));
+                    System.out.println("-----------------------------");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     // Lấy sản phẩm theo ID
     public Product getProductById(int id) {
@@ -77,11 +99,10 @@ public class ProductDAO {
             while (resultSet.next()) {
                 Product product = new Product();
                 product.setId(resultSet.getInt("id"));
-                product.setName(resultSet.getString("name"));
+                product.setName(resultSet.getString("product_name"));
                 product.setDescription(resultSet.getString("description"));
-                product.setPhoto(resultSet.getString("photo"));
+                product.setPhoto(resultSet.getString("images"));
                 product.setPrice(resultSet.getDouble("price"));
-                product.setDiscount(resultSet.getDouble("discount"));
 
                 int categoryId = resultSet.getInt("category_id");
                 Category category = getCategoryById(categoryId);
@@ -130,7 +151,7 @@ public class ProductDAO {
     // Helper method để lấy thông tin Category theo ID
     private Category getCategoryById(int categoryId) {
         Category category = null;
-        String sql = "SELECT * FROM Category WHERE id = ?";
+        String sql = "SELECT * FROM product_categories WHERE id = ?";
         try (Connection connection = DBConnectionPool.getDataSource().getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, categoryId);
@@ -138,7 +159,7 @@ public class ProductDAO {
             if (resultSet.next()) {
                 category = new Category();
                 category.setId(resultSet.getInt("id"));
-                category.setTitle(resultSet.getString("title"));
+                category.setTitle(resultSet.getString("category_name"));
                 category.setDescription(resultSet.getString("description"));
                 // Set other Category fields if necessary
             }

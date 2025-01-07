@@ -1,9 +1,13 @@
 package dao;
 
-import models.Category;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+import models.Category;
 
 public class CategoryDAO {
     public CategoryDAO() {
@@ -21,7 +25,7 @@ public class CategoryDAO {
             while (rs.next()) {
                 Category category = new Category();
                 category.setId(rs.getInt("id"));
-                category.setTitle(rs.getString("title"));
+                category.setTitle(rs.getString("category_name"));
                 category.setDescription(rs.getString("description"));
                 categoriesList.add(category);
             }
