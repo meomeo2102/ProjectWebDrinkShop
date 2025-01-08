@@ -9,10 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import models.User;
 
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
-
-import dao.DBConnectionPool;
 import dao.UserDAO;
 
 /**
@@ -20,7 +17,10 @@ import dao.UserDAO;
  */
 @WebServlet("/login")
 public class login extends HttpServlet {
-	 @Override
+	private static final long serialVersionUID = 1L;
+
+
+	@Override
 	    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 	        
 		 	// check if session is existed

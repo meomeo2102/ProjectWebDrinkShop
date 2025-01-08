@@ -48,6 +48,7 @@ public class GetAuthCode extends HttpServlet {
 
 		UserDAO userdao = new UserDAO();
 		user = userdao.findByEmail(email);
+		
 		if (user == null) {
 			errorMessage = "Không tìm thấy người dùng với email này.";
 			req.setAttribute("errorMessage", errorMessage);

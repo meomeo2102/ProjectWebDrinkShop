@@ -35,7 +35,7 @@ public class Homepage extends HttpServlet {
         context.setAttribute("categoryList", categoryList);
         request.getRequestDispatcher("/Homepage.jsp").forward(request, response);
         
-        
+        	
 	}
 
 

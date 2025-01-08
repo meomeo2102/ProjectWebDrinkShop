@@ -64,15 +64,19 @@ public class UserDAO {
         }
         return null;
     }
+    
     public boolean updatePassword (String email , String password) throws SQLException {
-        String query = "UPDATE  listUser SET password=? WHERE email=?";
+        String query = "UPDATE users SET password=? WHERE email=?";
         try (Connection connection = DBConnectionPool.getDataSource().getConnection()) {
             PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, password);
             ps.setString(2, email);
-            return ps.executeUpdate() > 0;
+            int row = ps.executeUpdate();
+            System.out.println(row);
+            return row > 0;
         }
     }
+    
     public boolean registerUser(User user) throws SQLException {
         String sql = "insert into users  (username, password, email, phone_number) " +
                 "VALUES (?,?,?,?)";

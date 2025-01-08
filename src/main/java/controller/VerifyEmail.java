@@ -16,27 +16,44 @@ import java.io.IOException;
 @WebServlet("/VerifyEmail")
 public class VerifyEmail extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+	
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		HttpSession session = req.getSession();
+		Integer authCode = (Integer) session.getAttribute("authCode");
+		String userMail = (String) session.getAttribute("userEmail");
+		JavaMailUtil.sendEmail(userMail, authCode);
+		super.doGet(req, resp);
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		
 		HttpSession session = req.getSession();
-		int authCode = (int) session.getAttribute("authCode");
-		String userMail = (String) session.getAttribute("email");
-		JavaMailUtil.sendEmail(userMail, authCode);
-		
-		
-		
+		Integer authCode = (Integer) session.getAttribute("authCode");
+		String userMail = (String) session.getAttribute("userEmail");
+		System.out.println("Session email: " + session.getAttribute("userEmail"));
+		System.out.println("User email: " + userMail);
+		String userInputStr = req.getParameter("authCode");
+		// Check if userInputStr is not null and is a valid integer
+	    if (userInputStr != null) {
+	        try {
+	            int userInput = Integer.parseInt(userInputStr);
+	            if (authCode != null && authCode.equals(userInput)) {
+	            	System.out.println("Session email: " + session.getAttribute("userEmail"));
+	        		System.out.println("User email: " + userMail);
+	            	req.getRequestDispatcher("/ChangePassword.jsp").forward(req, res);
+	            } else {
+	                req.setAttribute("message", "Sai mã xác minh");
+	                req.getRequestDispatcher("/ResetPassword.jsp").forward(req, res);
+	            }
+	        } catch (NumberFormatException e) {
+	            req.setAttribute("message", "Mã xác minh không hợp lệ");
+	            req.getRequestDispatcher("/ResetPassword.jsp").forward(req, res);
+	        }
+	    } else {
+	        req.setAttribute("message", "Mã xác minh không được để trống");
+	        req.getRequestDispatcher("/ResetPassword.jsp").forward(req, res);
+	    }
 		
 	}
 

@@ -21,7 +21,7 @@
 												placeholder="name@example.com" required> <label
 												for="email" class="form-label">Email </label>
 										</div>
-										<p> ${requestScope.errorMessage } </p>
+									<p class="text-danger">${requestScope.message}</p>
 										<div class="d-grid my-3">
 											<button class="btn btn-primary btn-lg" type="submit">get
 												Code</button>
@@ -30,8 +30,7 @@
 								</div>
 							</c:when>
 							<c:otherwise>
-								<h2 class="fs-6 fw-normal text-center text-secondary mb-4">enter
-									Auth Code sent to email</h2>
+								<h2 class="fs-6 fw-normal text-center text-secondary mb-4">enter Auth Code sent to email</h2>
 								<form action="VerifyEmail" method="POST">
 									<div class="col-12">
 										<div class="form-floating mb-3">
@@ -41,9 +40,9 @@
 										</div>
 									</div>
 									<div class="col-12">
+									<p class="text-danger">${requestScope.message}</p>
 										<div class="d-grid my-3">
-											<button class="btn btn-primary btn-lg" type="submit">
-												Submit</button>
+											<button class="btn btn-primary btn-lg" type="submit"> Submit </button>
 										</div>
 									</div>
 								</form>
