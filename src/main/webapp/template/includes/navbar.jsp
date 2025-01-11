@@ -64,7 +64,7 @@
 							</li>
 							<li class="text-center border-bottom"><a
 								class="dropdown-item "
-								href="${pageContext.request.contextPath}/secure/user/logout">Log
+								href="${pageContext.request.contextPath}/logout">Log
 									out</a></li>
 							<li class="text-center border-bottom"><a
 								class="dropdown-item "

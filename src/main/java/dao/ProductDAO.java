@@ -28,7 +28,6 @@ public class ProductDAO {
             statement.setString(2, product.getDescription());
             statement.setString(3, product.getPhoto());
             statement.setDouble(4, product.getPrice());
-            statement.setDouble(5, product.getDiscount());
             statement.setInt(6, product.getCategory().getId());
             statement.executeUpdate();
 
@@ -36,6 +35,7 @@ public class ProductDAO {
             e.printStackTrace();
         }
     }
+    
     public static void main(String[] args) {
         ProductDAO dao = new ProductDAO();
         try {
@@ -49,7 +49,6 @@ public class ProductDAO {
                     System.out.println("Mô tả: " + product.getDescription());
                     System.out.println("Ảnh: " + product.getPhoto());
                     System.out.println("Giá: " + product.getPrice());
-                    System.out.println("Giảm giá: " + product.getDiscount());
                     System.out.println("Danh mục: " + (product.getCategory() != null ? product.getCategory().getTitle() : "Không rõ"));
                     System.out.println("-----------------------------");
                 }
@@ -62,7 +61,7 @@ public class ProductDAO {
     // Lấy sản phẩm theo ID
     public Product getProductById(int id) {
         Product product = null;
-        String sql = "SELECT * FROM Product WHERE id = ?";
+        String sql = "SELECT * FROM products WHERE id = ?";
         try (Connection connection = DBConnectionPool.getDataSource().getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, id);
@@ -70,14 +69,13 @@ public class ProductDAO {
             if (resultSet.next()) {
                 product = new Product();
                 product.setId(resultSet.getInt("id"));
-                product.setName(resultSet.getString("name"));
+                product.setName(resultSet.getString("product_name"));
                 product.setDescription(resultSet.getString("description"));
-                product.setPhoto(resultSet.getString("photo"));
+                product.setPhoto(resultSet.getString("images"));
                 product.setPrice(resultSet.getDouble("price"));
-                product.setDiscount(resultSet.getDouble("discount"));
 
                 int categoryId = resultSet.getInt("category_id");
-                Category category = getCategoryById(categoryId); // Helper method to fetch Category
+                Category category = getCategoryById(categoryId); 
                 product.setCategory(category);
             }
 
@@ -125,7 +123,6 @@ public class ProductDAO {
             statement.setString(2, product.getDescription());
             statement.setString(3, product.getPhoto());
             statement.setDouble(4, product.getPrice());
-            statement.setDouble(5, product.getDiscount());
             statement.setInt(6, product.getCategory().getId());
             statement.setInt(7, product.getId());
             statement.executeUpdate();
@@ -210,7 +207,6 @@ public class ProductDAO {
                 product.setDescription(resultSet.getString("description"));
                 product.setPhoto(resultSet.getString("photo"));
                 product.setPrice(resultSet.getDouble("price"));
-                product.setDiscount(resultSet.getDouble("discount"));
 
                 int categoryId = resultSet.getInt("category_id");
                 Category category = getCategoryById(categoryId);
@@ -241,7 +237,6 @@ public class ProductDAO {
                 product.setDescription(resultSet.getString("description"));
                 product.setPhoto(resultSet.getString("photo"));
                 product.setPrice(resultSet.getDouble("price"));
-                product.setDiscount(resultSet.getDouble("discount"));
 
                 int categoryId = resultSet.getInt("category_id");
                 Category category = getCategoryById(categoryId);

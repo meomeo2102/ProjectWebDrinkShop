@@ -19,7 +19,7 @@
 	<div class="container">
 		<h1>${requestScope.welcome}</h1>
 		<jsp:include page="template/static/home.jsp">
-			<jsp:param name="contentPage" value="/template/home.jsp" />
+			<jsp:param name="contentPage" value="template/static/home.jsp" />
 		</jsp:include>
 	</div>
 

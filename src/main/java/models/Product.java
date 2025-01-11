@@ -6,7 +6,6 @@ public class Product {
     private String description; // Mô tả sản phẩm
     private String photo; // URL ảnh sản phẩm (ánh xạ từ cột `photo`)
     private double price; // Giá sản phẩm
-    private double discount; // Giảm giá
     private Category category; // Đối tượng Category ánh xạ từ category_id
 
     public Product() {
@@ -18,17 +17,11 @@ public class Product {
         this.description = description;
         this.photo = photo;
         this.price = price;
-        this.discount = discount;
         this.category = category;
     }
 
     
     
-    @Override
-	public String toString() {
-		return "Product [id=" + id + ", name=" + name + ", description=" + description + ", photo=" + photo + ", price="
-				+ price + ", discount=" + discount + ", category=" + category + "]";
-	}
 
 	// Getters và Setters
     public int getId() {
@@ -69,14 +62,6 @@ public class Product {
 
     public void setPrice(double price) {
         this.price = price;
-    }
-
-    public double getDiscount() {
-        return discount;
-    }
-
-    public void setDiscount(double discount) {
-        this.discount = discount;
     }
 
     public Category getCategory() {
