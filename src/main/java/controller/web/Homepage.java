@@ -1,6 +1,7 @@
 package controller.web;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.List;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -12,6 +13,7 @@ import jakarta.servlet.http.HttpSession;
 import models.Category;
 import models.Product;
 import dao.CategoryDAO;
+import dao.DBConnectionPool;
 import dao.ProductDAO;
 
 /**
@@ -22,7 +24,6 @@ public class Homepage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
 		List<Product> productList = new ProductDAO().getAllProducts();
         List<Category> categoryList = new CategoryDAO().getAllCategories();
 

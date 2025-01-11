@@ -2,7 +2,7 @@
 <!-- Navigation-->
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow">
 	<div class="container px-4 px-lg-5">
-		<a class="navbar-brand" href="Homepage">Boba Station</a>
+		<a class="navbar-brand" href="${pageContext.request.contextPath}/Homepage">Boba Station</a>
 		<button class="navbar-toggler" type="button" data-bs-toggle="collapse"
 			data-bs-target="#navbarSupportedContent"
 			aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -27,18 +27,18 @@
 					</ul></li>
 			</ul>
 
-
-
 			<c:set var="userId" value="${sessionScope.userId}" />
 			<c:set var="userImg" value="${sessionScope.img}" />
 			<c:choose>
 				<c:when test="${userId != null}">
-					<form class="d-flex px-4">
-						<button class="btn btn-outline-dark" type="submit">
+					<a
+						href="${pageContext.request.contextPath}/secure/cart?userId=${sessionScope.user.getId()}"
+						class="d-flex px-4" style="text-decoration: none;">
+						<button class="btn btn-outline-dark" type="button">
 							<i class="bi-cart-fill me-1"></i> Cart <span
-								class="badge bg-dark text-white ms-1 rounded-pill">0</span>
+								class="badge bg-dark text-white ms-1 rounded-pill">${numInCart }</span>
 						</button>
-					</form>
+					</a>
 
 					<div class="dropdown">
 						<button class="btn dropdown-toggle d-flex align-items-center"
@@ -64,8 +64,8 @@
 							</li>
 							<li class="text-center border-bottom"><a
 								class="dropdown-item "
-								href="${pageContext.request.contextPath}/logout">Log
-									out</a></li>
+								href="${pageContext.request.contextPath}/logout"
+								style="text-decoration: none;">Log out</a></li>
 							<li class="text-center border-bottom"><a
 								class="dropdown-item "
 								href="${pageContext.request.contextPath}/secure/user/upload">Upload
@@ -76,12 +76,10 @@
 				</c:when>
 				<c:otherwise>
 					<div class="widget-header ">
-						<small class="title text-muted">Welcome!</small>
 						<div>
 							<a href="${pageContext.request.contextPath}/Login.jsp">
 								<button class="btn btn-outline-dark">Login</button>
-							</a> 
-							<a href="${pageContext.request.contextPath}/Register.jsp">
+							</a> <a href="${pageContext.request.contextPath}/Register.jsp">
 								<button class="btn btn-outline-dark">Register</button>
 							</a>
 						</div>

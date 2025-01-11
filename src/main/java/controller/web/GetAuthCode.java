@@ -13,7 +13,9 @@ import utool.HelperClass;
 import utool.JavaMailUtil;
 
 import java.io.IOException;
+import java.sql.Connection;
 
+import dao.DBConnectionPool;
 import dao.UserDAO;
 
 /**
@@ -27,11 +29,11 @@ public class GetAuthCode extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		
+
 		HttpSession session = req.getSession();
 		String a = (String) session.getAttribute("authCode");
 		System.out.println(a);
-		
+
 		req.getRequestDispatcher("/ResetPassword.jsp").forward(req, res);
 	}
 
@@ -39,39 +41,42 @@ public class GetAuthCode extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		String email = req.getParameter("email");
-		String errorMessage = "";
-		String url = "/ResetPassword.jsp";
+		try(Connection connection = DBConnectionPool.getDataSource().getConnection()) {
+			String email = req.getParameter("email");
+			String errorMessage = "";
+			String url = "/ResetPassword.jsp";
 
-		HttpSession session = req.getSession();
-		User user = null;
+			HttpSession session = req.getSession();
+			User user = null;
 
-		UserDAO userdao = new UserDAO();
-		user = userdao.findByEmail(email);
-		
-		if (user == null) {
-			errorMessage = "Không tìm thấy người dùng với email này.";
-			req.setAttribute("errorMessage", errorMessage);
-			req.getRequestDispatcher(url).forward(req, res);
-		} else {
-			int authCode = HelperClass.generateRandom();
-	        session.setAttribute("authCode", authCode);
-	        session.setAttribute("userEmail", user.getEmail());
-			System.out.println("gán vào authcode");
-			req.getRequestDispatcher("/ResetPassword.jsp").forward(req, res);
-			
-			// Gửi email ở nền để tăng tốc độ 
-	        new Thread(() -> {
-	            try {
-	                JavaMailUtil.sendEmail(email, authCode);
-	                System.out.println("Email đã được gửi đến: " + email);
-	            } catch (Exception e) {
-	                e.printStackTrace();
-	                System.err.println("Gửi email thất bại: " + e.getMessage());
-	            }
-	        }).start();
+			UserDAO userdao = new UserDAO(connection);
+			user = userdao.findByEmail(email);
+
+			if (user == null) {
+				errorMessage = "Không tìm thấy người dùng với email này.";
+				req.setAttribute("errorMessage", errorMessage);
+				req.getRequestDispatcher(url).forward(req, res);
+			} else {
+				int authCode = HelperClass.generateRandom();
+				session.setAttribute("authCode", authCode);
+				session.setAttribute("userEmail", user.getEmail());
+				System.out.println("gán vào authcode");
+				req.getRequestDispatcher("/ResetPassword.jsp").forward(req, res);
+
+				// Gửi email ở nền để tăng tốc độ 
+				new Thread(() -> {
+					try {
+						JavaMailUtil.sendEmail(email, authCode);
+						System.out.println("Email đã được gửi đến: " + email);
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.err.println("Gửi email thất bại: " + e.getMessage());
+					}
+				}).start();
+			}
+		} catch (Exception e2) {
+			 throw new ServletException("Error connecting to the database", e2);
 		}
-		
 	}
 
 }

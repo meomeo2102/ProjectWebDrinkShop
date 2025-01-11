@@ -36,7 +36,7 @@ public class Register extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		
-		try { // Lấy connection từ pool
+		try (Connection connection = DBConnectionPool.getDataSource().getConnection()) { // Lấy connection từ pool
 			
 			String message = "";
             String username = req.getParameter("username");
@@ -44,7 +44,7 @@ public class Register extends HttpServlet {
             String email = req.getParameter("email");
             String phoneNumber = req.getParameter("phoneNumber");
 
-			UserDAO userDAO = new UserDAO();
+			UserDAO userDAO = new UserDAO(connection);
             if(userDAO.checkEmailExist(email)) {
     			message += " Invalid Email";
                 req.setAttribute("Rmessage", message);

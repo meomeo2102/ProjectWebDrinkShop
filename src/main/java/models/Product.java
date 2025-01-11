@@ -6,29 +6,38 @@ public class Product {
     private String description; // Mô tả sản phẩm
     private String photo; // URL ảnh sản phẩm (ánh xạ từ cột `photo`)
     private double price; // Giá sản phẩm
+    private int stock; // 
     private Category category; // Đối tượng Category ánh xạ từ category_id
 
     public Product() {
     }
 
-    public Product(int id, String name, String description, String photo, double price, double discount, Category category) {
+    public Product(int id, String name, String description, String photo, double price, double discount,int stock, Category category) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.photo = photo;
         this.price = price;
+        this.stock = stock;
         this.category = category;
     }
 
     
-    
-
 	// Getters và Setters
+    
+    public int getStock() {
+		return stock;
+	}
+
+	public void setStock(int stock) {
+		this.stock = stock;
+	}
+    
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
+	public void setId(int id) {
         this.id = id;
     }
 
