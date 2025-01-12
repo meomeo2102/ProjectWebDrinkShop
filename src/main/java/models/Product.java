@@ -80,4 +80,14 @@ public class Product {
     public void setCategory(Category category) {
         this.category = category;
     }
+	  // Phương thức tính giá sau giảm giá
+    public double getDiscountedPrice(double discountPercentage) {
+        return price - (price * discountPercentage / 100);
+    }
+
+    @Override
+    public String toString() {
+        return "Product [id=" + id + ", name=" + name + ", description=" + description + ", photo=" + photo
+                + ", price=" + price + ", stock=" + stock + ", category=" + category + "]";
+    }
 }
