@@ -28,7 +28,10 @@ public class ProductDAO {
             statement.setString(2, product.getDescription());
             statement.setString(3, product.getPhoto());
             statement.setDouble(4, product.getPrice());
+            statement.setDouble(5, product.getDiscount());  // Thêm trường giảm giá nếu có
             statement.setInt(6, product.getCategory().getId());
+            statement.setInt(7, product.getStock());  // Cập nhật stock
+            statement.setInt(8, product.getId());
             statement.executeUpdate();
 
         } catch (SQLException e) {
