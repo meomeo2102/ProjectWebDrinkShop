@@ -15,7 +15,7 @@ public class User {
 
 	// Constructor
 	public User() {}
-
+		this.favoriteProducts = new ArrayList<>();
 	// Getter và Setter
 
 	public void setImg (String path) {
