@@ -61,12 +61,26 @@ public class login extends HttpServlet {
 	                else {
 	                	Cart cart = cartDAO.getCartByUserId(user.getId());
 	                	int numInCart = (cart != null) ? cartDAO.getCartItems(cart.getCartId()).size() : 0;
-	                	session.setAttribute("user", user);
+				session.setAttribute("user", user);
 	                	session.setAttribute("numInCart", numInCart);
 	                    session.setAttribute("userId", user.getId());
 	                    session.setAttribute("role", role);
 	                    session.setAttribute("img", user.getImg());
 	                    req.getRequestDispatcher("Homepage").forward(req, resp);
+				        	                 /*// Lưu thông tin người dùng vào session
+                    session.setAttribute("user", user);
+                    session.setAttribute("numInCart", numInCart);
+                    session.setAttribute("userId", user.getId());
+                    session.setAttribute("role", user.getIsAdmin() == 1 ? "admin" : "user"); // Kiểm tra quyền admin
+                    session.setAttribute("img", user.getImg());
+
+                    // Kiểm tra quyền và chuyển hướng tương ứng
+                    if (user.getIsAdmin() == 1) {
+                        // Nếu là admin, chuyển hướng đến trang quản trị
+                        req.getRequestDispatcher("/admin/dashboard").forward(req, resp);
+                    } else {
+                        // Nếu là người dùng thông thường, chuyển hướng đến trang chủ
+                        req.getRequestDispatcher("Homepage").forward(req, resp);*/
 	                    
 	                }
 	            } catch (SQLException e) {
