@@ -9,7 +9,19 @@ public class UserDAO {
     public UserDAO(Connection connection) {
     	this.con = connection;
     }
-    
+        /*public User getUserRs(ResultSet rs) throws SQLException {
+        //User user = new User();
+        //user.setId(rs.getInt("id")); // Lấy ID người dùng
+        user.setUsername(rs.getString("username")); // Lấy tên đăng nhập
+        user.setPassword(rs.getString("password")); // Lấy mật khẩu
+        user.setEmail(rs.getString("email")); // Lấy email
+        user.setAddress(rs.getString("address")); // Lấy địa chỉ
+        user.setPhone(rs.getString("phone_number")); // Lấy số điện thoại
+        user.setImg(rs.getString("images")); // Lấy hình ảnh
+        user.setIsAdmin(rs.getInt("is_admin")); // Lấy và gán giá trị is_admin vào User
+
+        return user;
+    }*/
     public User getUserRs (ResultSet rs) throws SQLException {
         User user = new User();
         user.setId(rs.getInt("id"));
