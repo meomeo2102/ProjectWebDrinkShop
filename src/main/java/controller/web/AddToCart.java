@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import dao.CartDAO;
+import dao.CartItemDAO;
 import dao.DBConnectionPool;
 import dao.ProductDAO;
 import jakarta.servlet.ServletException;
@@ -25,13 +26,17 @@ public class AddToCart extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		int quantity = 1;
 		int id;
-		System.out.println("11111 djt me m");
+		HttpSession session = req.getSession();
+		
+		User user = (User) session.getAttribute("user");
+		if(user == null) {
+			res.sendRedirect(req.getContextPath() + "/login");
+			return;
+		}
+		
 		ProductDAO productDAO = new ProductDAO();
 		try {
 			Connection connection = DBConnectionPool.getDataSource().getConnection();
@@ -39,27 +44,49 @@ public class AddToCart extends HttpServlet {
 				id = Integer.parseInt(req.getParameter("productId"));
 				Product product = productDAO.getProductById(id);
 				if(product != null) {
-					HttpSession session = req.getSession();
+					
 					if(req.getParameter("quantity") != null) {
 						quantity = Integer.parseInt(req.getParameter("quantity"));
 					}
-					User user = (User) session.getAttribute("user");
-					
+					CartDAO cartDAO = new CartDAO(connection);
+					Cart cart;
 					if(session.getAttribute("cart") == null) {
-
-						CartDAO cartDAO = new CartDAO(connection);
-						cartDAO.createCart(new Cart(1, user.getId()));
-						
+						cart = new Cart(1, user.getId());
+						cartDAO.createCart(cart);
+						session.setAttribute("cart", cartDAO.getCartByUserId(user.getId()));
 					}
-					Cart cart = (Cart) session.getAttribute("cart");
-					cart.addItem(product, quantity);
+						cart = (Cart) session.getAttribute("cart");
+						CartItemDAO cartItemDAO = new CartItemDAO();
+						
+						// Kiểm tra các tham số đầu vào
+				        if (quantity <= 0) {
+				            throw new IllegalArgumentException("Quantity must be greater than 0");
+				        }
+				        
+				        if(cart == null) {
+				        	throw new NullPointerException("cart is Null");
+				        }
+				        
+				        Product item = cart.lookup(product.getId());
+				        if(item == null && quantity > 0) {
+				        	cartItemDAO.addCartItem(cart, product, quantity);
+				        }
+				        
+				        if(item != null && quantity > 0) {
+				        	cartItemDAO.setQuantity(cart, product, quantity);
+				        }
+
 				}
 
 			}
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		
+		res.sendRedirect(req.getContextPath() + "/secure/cart");
 	}
 
 

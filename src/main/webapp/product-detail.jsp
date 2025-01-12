@@ -7,10 +7,13 @@
 <meta charset="UTF-8">
 <jsp:include page="template/includes/headerResource.jsp" />
 
-<title>Insert title here</title>
+<title>${requestScope.product }</title>
 </head>
 <body>
+	<!-- Navbar -->
 	<%@ include file="template/includes/navbar.jsp"%>
+
+
 
 	<c:set var="singleProduct" value="${requestScope.product}" />
 	<!-- Product section-->
@@ -20,22 +23,28 @@
 				<div class="col-md-6">
 					<img class="card-img-top mb-5 mb-md-0"
 						src="${pageContext.request.contextPath}/image/product/${product.photo }"
-						alt="..." />
+						alt="${product.name }" />
 				</div>
 				<div class="col-md-6">
-					<div class="small mb-1"><i>PRODUCT_ID :</i> ${product.id }</div>
+					<div class="small mb-1">
+						<i>PRODUCT_ID :</i> ${product.id }
+					</div>
 					<h1 class="display-5 fw-bolder">${product.name }</h1>
 					<div class="fs-5 mb-5">
 						<span>$ ${product.price }</span>
 					</div>
 					<p class="lead">${product.description }</p>
-					<div class="d-flex">
-						<input class="form-control text-center me-3" name="inputQuantity"
-							type="number" value="1" style="max-width: 3rem" />
-						<button class="btn btn-outline-dark flex-shrink-0" type="button">
-							<i class="bi-cart-fill me-1"></i> Add to cart
-						</button>
-					</div>
+					<form action="addToCart" method="GET">
+						<div class="d-flex">
+							<input class="form-control text-center me-3" name="inputQuantity"
+								type="number" value="1" min="1" style="max-width: 3rem" /> <input
+								name="productId" type="hidden" value="${product.id }" />
+							<button class="btn btn-outline-dark flex-shrink-0" type="submit">
+								<i class="bi-cart-fill me-1"></i> Add to cart
+							</button>
+
+						</div>
+					</form>
 				</div>
 			</div>
 		</div>
@@ -46,12 +55,12 @@
 			<h2 class="fw-bolder mb-4">Other Item</h2>
 			<c:choose>
 				<c:when test="${not empty productList }">
-					<div
+					<div id="content"
 						class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
 						<c:forEach var="product" items="${productList}" varStatus="status">
 							<c:if test="${status.index < 4}">
 								<!-- Show only the first 4 products -->
-								<div class="col mb-5">
+								<div class="col mb-5 product-count">
 									<div class="card h-100">
 										<a href="./product?id=${product.id}"> <!-- Product image-->
 											<img class="card-img-top bg-dark"
@@ -66,11 +75,11 @@
 												<!-- Product reviews-->
 												<div
 													class="d-flex justify-content-center small text-warning mb-2">
-													<div class="bi-star-fill"></div>
-													<div class="bi-star-fill"></div>
-													<div class="bi-star-fill"></div>
-													<div class="bi-star-fill"></div>
-													<div class="bi-star-fill"></div>
+													<div class="bi-star-fill">*</div>
+													<div class="bi-star-fill">*</div>
+													<div class="bi-star-fill">*</div>
+													<div class="bi-star-fill">*</div>
+													<div class="bi-star-fill">*</div>
 												</div>
 												<!-- Product price-->
 												$ ${product.price}
@@ -89,8 +98,8 @@
 						</c:forEach>
 					</div>
 					<div class="text-center">
-						<button id="show-more" class="btn btn-outline-dark mt-4">Show
-							More</button>
+						<button id="show-more" onclick="loadMore()"
+							class="btn btn-outline-dark mt-4">Show More</button>
 					</div>
 				</c:when>
 				<c:otherwise>
@@ -101,5 +110,29 @@
 			</c:choose>
 		</div>
 	</section>
+
+	<%@ include file="template/includes/footer.jsp"%>
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script>
+	function loadMore() {
+	    var amount = document.getElementsByClassName("product-count").length; // Get the current number of products
+	    $.ajax({
+	        url: "/zzzz/load",
+	        type: "GET", // Send it through GET method
+	        data: {
+	            exists: amount // Corrected from 'exits' to 'exists'
+	        },
+	        success: function(data) {
+	            var row = document.getElementById("content");
+	            row.innerHTML += data;	
+	        },
+	        error: function(xhr) {
+	            console.error("Error loading more products:", xhr);
+	            // Optionally, you can display an error message to the user
+	        }
+	    });
+	}
+        </script>
 </body>
 </html>

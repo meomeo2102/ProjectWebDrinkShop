@@ -16,9 +16,7 @@ import jakarta.servlet.http.HttpSession;
 import models.Category;
 import models.Product;
 
-/**
- * Servlet implementation class ProductServlet
- */
+// hiển thị thông tin sản phẩm
 @WebServlet("/product")
 public class ProductServlet extends HttpServlet {
 	@Override
@@ -37,21 +35,21 @@ public class ProductServlet extends HttpServlet {
 			ProductDAO productDAO = new ProductDAO();
 			Product product = productDAO.getProductById(Integer.parseInt(productId));
 
-			// Kiểm tra nếu sản phẩm tồn tại
+			// Kiểm tra nếu sản phẩm không tồn tại
 			if (product == null) {
 				// Xử lý khi không tìm thấy sản phẩm
 				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Product not found");
-
 			}
-			
+
+			// Nếu sản phẩm tồn tại
 			List<Product> productList = new ProductDAO().getAllProducts();
-	        request.setAttribute("productList", productList);
-			
+			request.setAttribute("productList", productList);
+
 			// Thiết lập thuộc tính cho request
 			request.setAttribute("product", product);
 			// Chuyển hướng đến product-detail.jsp
 			request.getRequestDispatcher("product-detail.jsp").forward(request, response);
-			
+
 		} catch (Exception e) {
 			throw new ServletException("Error connecting to the database", e);
 		}

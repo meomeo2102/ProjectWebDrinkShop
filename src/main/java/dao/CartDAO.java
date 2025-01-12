@@ -16,12 +16,12 @@ public class CartDAO {
     }
 
     public Cart getCartByUserId(int userId) {
-        String query = "SELECT * FROM Cart WHERE UserId = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        String sql = "SELECT * FROM Cart WHERE UserId = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                int cartId = rs.getInt("id");
+                int cartId = rs.getInt("CartId");
                 Cart cart = new Cart(cartId, userId);
 
                 // Populate cart items
@@ -32,14 +32,16 @@ public class CartDAO {
                     while (itemRs.next()) {
                         int productId = itemRs.getInt("ProductId");
                         int quantity = itemRs.getInt("Quantity");
-
+                        System.out.println(quantity);
                         ProductDAO productDAO = new ProductDAO();
                         Product product = productDAO.getProductById(productId);
+                        
                         if (product != null) {
-                            cart.addItem(product, quantity);
+                            cart.addItem(product.getId(), quantity);
                         } else {
                             System.err.println("Product not found: ID = " + productId);
                         }
+                        
                     }
                 }
 
@@ -63,10 +65,6 @@ public class CartDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    public void createCart(int userid) {
-    	
     }
     
     public void updateCart(Cart cart) {
@@ -140,4 +138,23 @@ public class CartDAO {
             e.printStackTrace();  // Log the SQL exception
         }
     }
+
+	public boolean removeCartItem(int cartId, int pId) {
+		String query = "DELETE FROM CartItem WHERE CartId = ? AND ProductId = ?";
+	    try (PreparedStatement stmt = connection.prepareStatement(query)) {
+	        // Gán giá trị cho các tham số trong câu lệnh SQL
+	        stmt.setInt(1, cartId); // Gán cartId vào tham số đầu tiên
+	        stmt.setInt(2, pId);   // Gán pId vào tham số thứ hai
+
+	        // Thực thi câu lệnh DELETE
+	        int rowsAffected = stmt.executeUpdate();
+	        // Kiểm tra nếu có ít nhất một hàng bị ảnh hưởng (xóa thành công)
+	        return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();  // Log the SQL exception
+        }
+	    return false;
+	}
+
+	
 }

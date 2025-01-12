@@ -2,11 +2,16 @@
 
 
 	<!-- Header-->
-	<header class="bg-dark" style = "border: 1px solid" >
-		<div class="container align-middle shadow">
-			<img class="img-fluid" style="width:100%;  object-fit:contain;" alt="Banner" src="${pageContext.request.contextPath}/image/website/web-banner.png">
-		</div>
-	</header>
+	<header class="bg-dark py-5 px-5">
+            <div class="container px-4 px-lg-5 my-5">
+                <div class="text-center text-white">
+                    <h1 class="display-4 fw-bolder">Shop in style</h1>
+                    <p class="lead fw-normal text-white-50 mb-0">With this shop hompeage template</p>
+                </div>
+            </div>
+        </header>
+	
+
 	
 <!-- Section-->
 	<section class="py-5">

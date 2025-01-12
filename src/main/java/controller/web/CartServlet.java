@@ -40,19 +40,22 @@ public class CartServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Integer userId = getUserIdFromSession(request.getSession());
-        
         if (isUserNotLoggedIn(userId)) {
             System.out.println("User not logged in. Redirecting to login page.");
             // Get the context path dynamically
             String contextPath = getServletContext().getContextPath();
             // Prepend the context path to the redirect URL
-            response.sendRedirect(LOGIN_PAGE);
+            response.sendRedirect(contextPath + LOGIN_PAGE);
             return;
         }
 
         try (Connection connection = dataSource.getConnection()) {
             System.out.println("Fetching the cart for userId: " + userId);
+            
             CartDAO cartDAO = new CartDAO(connection);
+            Cart cart = cartDAO.getCartByUserId(userId);
+            request.getSession().setAttribute("cart", cart);
+            
             // Display the user's cart
             handleCartDisplay(request, response, userId, cartDAO);
         } catch (Exception e) {
@@ -60,6 +63,7 @@ public class CartServlet extends HttpServlet {
             System.out.println("Error while displaying cart: " + e.getMessage());
             sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ERROR_PROCESSING_REQUEST);
         }
+        
     }
 
     @Override
@@ -112,8 +116,10 @@ public class CartServlet extends HttpServlet {
     }
 
     private void handleCartDisplay(HttpServletRequest request, HttpServletResponse response, int userId, CartDAO cartDAO) throws ServletException, IOException {
-        Cart cart = cartDAO.getCartByUserId(userId);
-
+    	
+    	
+    	Cart cart = cartDAO.getCartByUserId(userId);
+        System.out.println(cart.toString());
         if (cart == null || cart.getItems().isEmpty()) {
             System.out.println("Cart is empty or not found for userId: " + userId);
             request.setAttribute("errorMessage", "Your cart is empty.");
@@ -206,7 +212,7 @@ public class CartServlet extends HttpServlet {
             cartDAO.createCart(cart);
         }
 
-        cart.addItem(product, quantity);
+        cart.addItem(product.getId(), quantity);
         cartDAO.updateCart(cart);
     }
 

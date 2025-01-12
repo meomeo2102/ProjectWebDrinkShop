@@ -33,4 +33,9 @@ public class CartItem {
     public int getProductId() {
         return product.getId(); 
     }
+    
+    public boolean isValidQuantity(int q) {
+    	if(q > 0) return true;
+    	return false;
+    }
 }

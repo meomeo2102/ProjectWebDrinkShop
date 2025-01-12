@@ -250,4 +250,59 @@ public class ProductDAO {
         }
         return list;
     }
+    
+    public List<Product> getTop4() {
+    	 List<Product> list = new ArrayList<>();
+         String sql = "SELECT TOP 4 * FROM Product";
+         try (Connection connection = DBConnectionPool.getDataSource().getConnection()) {
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery();
+             while (resultSet.next()) {
+                 Product product = new Product();
+                 product.setId(resultSet.getInt("id"));
+                 product.setName(resultSet.getString("product_name"));
+                 product.setDescription(resultSet.getString("description"));
+                 product.setPhoto(resultSet.getString("images"));
+                 product.setStock(resultSet.getInt("stock"));
+                 product.setPrice(resultSet.getDouble("price"));
+                 int categoryId = resultSet.getInt("category_id");
+                 Category category = getCategoryById(categoryId);
+                 product.setCategory(category);
+
+                 list.add(product);
+             }
+
+         } catch (SQLException e) {
+             e.printStackTrace();
+         }
+         return list;
+    }
+    
+    public List<Product> getNext4(int amount) {
+   	 List<Product> list = new ArrayList<>();
+        String sql = "SELECT * FROM Product ORDER BY id OFFSET ? ROWS FETCH NEXT 3 ROWS ONLY";
+        try (Connection connection = DBConnectionPool.getDataSource().getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, amount);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Product product = new Product();
+                product.setId(resultSet.getInt("id"));
+                product.setName(resultSet.getString("product_name"));
+                product.setDescription(resultSet.getString("description"));
+                product.setPhoto(resultSet.getString("images"));
+                product.setStock(resultSet.getInt("stock"));
+                product.setPrice(resultSet.getDouble("price"));
+                int categoryId = resultSet.getInt("category_id");
+                Category category = getCategoryById(categoryId);
+                product.setCategory(category);
+
+                list.add(product);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+   }
 }

@@ -9,7 +9,7 @@ public class User {
 	private String email; // Địa chỉ email
 	private String address; // Địa chỉ
 	private String phone; // Số điện thoại
-	private String Img ;
+	private String Img = "image/avatars/default-avatar.png";
 	private int isAdmin;
 	private ArrayList<Product> FavoriteProducts ;
 

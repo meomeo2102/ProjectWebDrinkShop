@@ -3,6 +3,8 @@ package models;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import dao.ProductDAO;
+
 public class Cart {
     private int cartId;
     private int userId;
@@ -18,7 +20,9 @@ public class Cart {
 
     
     // Add an item to the cart
-    public synchronized void addItem(Product product, int quantity) {
+    public synchronized void addItem(int productId, int quantity) {
+    	ProductDAO dao = new ProductDAO();
+    	Product product = dao.getProductById(productId);
         if (product == null) {
             throw new IllegalArgumentException("Product cannot be null.");
         }
@@ -26,33 +30,15 @@ public class Cart {
         if (quantity <= 0) {
             throw new IllegalArgumentException("Quantity must be greater than zero.");
         }
+        
+        items.put(productId, new CartItem(product, quantity));
 
-        // Check stock availability and update the cart
-        items.compute(product.getId(), (productId, existingItem) -> {
-            if (existingItem == null) {
-                // Validate initial quantity
-                if (quantity > product.getStock()) {
-                    throw new IllegalArgumentException("Insufficient stock. Requested: " + quantity + ", Available: " + product.getStock());
-                }
-                return new CartItem(product, quantity);
-            }
-
-            // Calculate the new quantity
-            int newQuantity = existingItem.getQuantity() + quantity;
-
-            // Validate new quantity against stock
-            if (newQuantity > product.getStock()) {
-                throw new IllegalArgumentException("Insufficient stock. Requested: " + newQuantity + ", Available: " + product.getStock());
-            }
-
-            // Update existing item
-            existingItem.setQuantity(newQuantity);
-            return existingItem;
-        });
+        
     }
 
     // Update the quantity of an item in the cart
     public synchronized void updateQuantity(int productId, int quantity) {
+    	
         CartItem item = items.get(productId);
         if (item == null) {
             throw new IllegalArgumentException("Product not found in the cart.");
@@ -70,9 +56,11 @@ public class Cart {
 
     // Calculate the total price for the cart
     public double calculateTotal() {
-        return items.values().stream()
-                .mapToDouble(CartItem::getTotalPrice)
-                .sum();
+    	double result = 0;
+    	for(Map.Entry<Integer, CartItem> entry : items.entrySet()) {
+		   result += entry.getValue().getTotalPrice();
+		}
+        return result;
     }
 
     // Get the total price of a specific product
@@ -119,4 +107,24 @@ public class Cart {
     public int getId() {
         return this.cartId;
     }
+
+
+	@Override
+	public String toString() {
+		return "Cart [cartId=" + cartId + ", userId=" + userId + ", items=" + items + "]";
+	}
+
+
+	public Product lookup(int product_id) {
+		for (Map.Entry<Integer, CartItem> entry : items.entrySet()) {
+		    if(entry.getKey().equals(product_id)) return entry.getValue().getProduct();
+		}
+		return null;
+	}
+	
+	public int getQuantity(int product_id) {
+		return items.get(product_id).getQuantity();
+	}
+    
+    
 }

@@ -48,7 +48,6 @@ public class login extends HttpServlet {
 	            String pass = req.getParameter("password");
 	            String message = "Sai thông tin tài khoản mật khẩu ";
 	            UserDAO udao = new UserDAO(connection);
-	            CartDAO cartDAO = new CartDAO(connection);
 	            String role = "";
 	            
 	            HttpSession session = req.getSession();
@@ -59,14 +58,11 @@ public class login extends HttpServlet {
 	                    req.getRequestDispatcher("/Login.jsp").forward(req, resp);
 	                }
 	                else {
-	                	Cart cart = cartDAO.getCartByUserId(user.getId());
-	                	int numInCart = (cart != null) ? cartDAO.getCartItems(cart.getCartId()).size() : 0;
 	                	session.setAttribute("user", user);
-	                	session.setAttribute("numInCart", numInCart);
 	                    session.setAttribute("userId", user.getId());
 	                    session.setAttribute("role", role);
 	                    session.setAttribute("img", user.getImg());
-	                    req.getRequestDispatcher("Homepage").forward(req, resp);
+	                    resp.sendRedirect("Homepage");
 	                    
 	                }
 	            } catch (SQLException e) {
