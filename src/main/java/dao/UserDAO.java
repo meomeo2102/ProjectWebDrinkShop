@@ -114,6 +114,26 @@ public class UserDAO {
     
     
     }
+  //public User getLogin(String email, String password) throws SQLException {
+        //String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
+        //try (PreparedStatement ps = con.prepareStatement(sql)) {
+            //ps.setString(1, email);
+            //ps.setString(2, password);
+
+            //try (ResultSet rs = ps.executeQuery()) {
+                //if (rs.next()) {
+                    //User user = getUserRs(rs); // Chuyển ResultSet thành User
+                    //int isAdmin = rs.getInt("is_admin"); // Lấy giá trị is_admin từ cơ sở dữ liệu
+                    //user.setIsAdmin(isAdmin); // Gán quyền admin cho user
+                    
+                    // Trả về đối tượng User với quyền admin hoặc user
+                    //return user;
+                //}
+            //}
+        //}
+        //return null;
+    //}
+
     
     public User getLogin(String email, String password) throws SQLException {
     	PreparedStatement ps = con.prepareStatement("select * from users where email = ? and password = ?");
