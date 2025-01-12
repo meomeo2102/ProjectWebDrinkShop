@@ -65,6 +65,10 @@ public class CartDAO {
         }
     }
 
+    public void createCart(int userid) {
+    	
+    }
+    
     public void updateCart(Cart cart) {
         String deleteItems = "DELETE FROM CartItem WHERE CartId = ?";
         String insertItem = "INSERT INTO CartItem (CartId, ProductId, Quantity) VALUES (?, ?, ?)";
