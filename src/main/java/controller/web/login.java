@@ -61,6 +61,18 @@ public class login extends HttpServlet {
 	                else {
 	                	Cart cart = cartDAO.getCartByUserId(user.getId());
 	                	int numInCart = (cart != null) ? cartDAO.getCartItems(cart.getCartId()).size() : 0;
+
+				     // Kiểm tra quyền admin (is_admin = 1)
+                    if (user.getIsAdmin() == 1) {
+                        // Nếu là admin, tạo đối tượng Admin và gán vào session
+                        Admin admin = new Admin(user.getId(), user.getUsername(), user.getPassword(), user.getEmail(), user.getAddress(), user.getPhone(), user.getImg(), user.getIsAdmin());
+                        session.setAttribute("admin", admin); // Lưu thông tin admin vào session
+                        session.setAttribute("role", "admin"); // Gắn role là admin
+                    } else {
+                        // Nếu là người dùng thông thường
+                        session.setAttribute("role", "user");
+                    }
+				// Tiến hành lưu trữ vào session cho các thông tin khác
 	                	session.setAttribute("user", user);
 	                	session.setAttribute("numInCart", numInCart);
 	                    session.setAttribute("userId", user.getId());
