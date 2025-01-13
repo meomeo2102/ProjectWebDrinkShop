@@ -38,9 +38,41 @@ public class login extends HttpServlet {
 	            req.getRequestDispatcher("/Login.jsp").forward(req, res);
 	        }
 	    }
-	 
+	 @Override
+protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    try (Connection connection = DBConnectionPool.getDataSource().getConnection()) {
+        String email = req.getParameter("email");
+        String pass = req.getParameter("password");
+        String message = "Sai thông tin tài khoản hoặc mật khẩu.";
+        UserDAO udao = new UserDAO(connection);
 
-	    @Override
+        HttpSession session = req.getSession();
+        try {
+            User user = udao.getLogin(email, pass); // Lấy thông tin người dùng từ DB
+            if (user == null) {
+                req.setAttribute("message", message);
+                req.getRequestDispatcher("/Login.jsp").forward(req, resp);
+            } else {
+                session.setAttribute("user", user);
+
+                // Kiểm tra quyền admin
+                if (user.isAdmin()) { 
+                    resp.sendRedirect("admin/dashboard"); // Chuyển hướng admin
+                } else {
+                    resp.sendRedirect("Homepage"); // Chuyển hướng người dùng thường
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    } catch (Exception e) {
+        throw new ServletException("Error connecting to the database", e);
+    }
+}
+
+
+	    
+	/*@Override
 	    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 	    	try (Connection connection = DBConnectionPool.getDataSource().getConnection()){
 	            
@@ -73,7 +105,7 @@ public class login extends HttpServlet {
 	        }
 
 
-	    }
+	    }*/
 	    
 
 }
