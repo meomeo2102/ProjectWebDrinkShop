@@ -33,6 +33,9 @@ public class User {
 	public void setIsAdmin(int isAdmin) {
 		this.isAdmin = isAdmin;
 	}
+	  public boolean isAdmin() {
+	        return this.isAdmin == 1; // Phương thức kiểm tra quyền admin
+	  }
 
 	public int getId() {
 		return id;
