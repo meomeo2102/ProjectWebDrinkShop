@@ -19,6 +19,7 @@ public class UserDAO {
         user.setAddress(rs.getString("address"));
         user.setPhone(rs.getString("phone_number"));
         user.setImg(rs.getString("images"));
+	user.setIsAdmin(rs.getInt("is_admin")); // Ánh xạ giá trị is_admin từ cơ sở dữ liệu
         return user;
     }
     public int editProfile(User user) {
