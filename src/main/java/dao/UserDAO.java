@@ -84,6 +84,17 @@ public class UserDAO {
     }
     return users;
 }
+	public boolean deleteUser(int id) {
+    String sql = "DELETE FROM users WHERE id = ?";
+    try (PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, id);
+        int rows = ps.executeUpdate();
+        return rows > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return false;
+}
 
     
     public boolean updatePassword (String email , String password) throws SQLException {
