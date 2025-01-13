@@ -2,6 +2,8 @@ package dao;
 
 import models.User;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 public class UserDAO {
 	
     private final Connection con;
@@ -69,6 +71,20 @@ public class UserDAO {
         }
         return null;
     }
+	public List<User> getAllUsers() {
+    List<User> users = new ArrayList<>();
+    String sql = "SELECT * FROM users";
+    try (PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+            users.add(getUserRs(rs)); // Sử dụng phương thức getUserRs để ánh xạ
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return users;
+}
+
     
     public boolean updatePassword (String email , String password) throws SQLException {
         String query = "UPDATE users SET password=? WHERE email=?";
