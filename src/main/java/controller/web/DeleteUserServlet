@@ -1,0 +1,32 @@
+package controller.web;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import dao.DBConnectionPool;
+import dao.UserDAO;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+@WebServlet("/deleteUser")
+public class DeleteUserServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        int id = Integer.parseInt(req.getParameter("id"));
+        try (Connection con = DBConnectionPool.getDataSource().getConnection()) {
+            UserDAO userDAO = new UserDAO(con);
+            boolean success = userDAO.deleteUser(id);
+            if (success) {
+                resp.sendRedirect("admin/users"); // Redirect về trang danh sách
+            } else {
+                resp.getWriter().write("Failed to delete user");
+            }
+        } catch (SQLException e) {
+            throw new ServletException(e);
+        }
+    }
+}
