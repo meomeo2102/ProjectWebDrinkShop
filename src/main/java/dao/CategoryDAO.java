@@ -10,6 +10,12 @@ import java.util.List;
 import models.Category;
 
 public class CategoryDAO {
+    	private Connection connection;
+
+	public CategoryDAO(Connection connection) {
+		this.connection = connection;
+	}
+    publi
     public CategoryDAO() {
 
     }
