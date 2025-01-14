@@ -2,15 +2,16 @@ package controller.web;
 
 import dao.ProductDAO;
 import dao.UserDAO;
+import dao.CategoryDAO;  // Thêm CategoryDAO
 import models.Product;
 import models.User;
+import models.Category;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.List;
@@ -19,12 +20,14 @@ import java.util.List;
 public class AdminDashboardServlet extends HttpServlet {
     private UserDAO userDAO;
     private ProductDAO productDAO;
+    private CategoryDAO categoryDAO;  // Khai báo CategoryDAO
 
     @Override
     public void init() throws ServletException {
         Connection connection = (Connection) getServletContext().getAttribute("DBConnection");
         userDAO = new UserDAO(connection);
-        productDAO = new ProductDAO();
+        productDAO = new ProductDAO(connection);
+        categoryDAO = new CategoryDAO();  // Khởi tạo CategoryDAO
     }
 
     @Override
@@ -37,6 +40,26 @@ public class AdminDashboardServlet extends HttpServlet {
             // Lấy danh sách tất cả sản phẩm
             List<Product> productList = productDAO.getAllProducts();
             request.setAttribute("productList", productList);
+
+            // Lấy danh sách tất cả danh mục
+            List<Category> categoryList = categoryDAO.getAllCategories();
+            request.setAttribute("categoryList", categoryList);
+
+            // Tính tổng số sản phẩm
+            int totalProducts = productList.size(); 
+            request.setAttribute("totalProducts", totalProducts);
+
+            // Tính tổng số người dùng
+            List<User> totalUsers = userDAO.getAllUsers();
+            request.setAttribute("totalUsers", totalUsers);
+
+            // Tính tổng số danh mục
+            int totalCategories = categoryList.size(); 
+            request.setAttribute("totalCategories", totalCategories);
+
+            // Tính doanh thu (nếu có thông tin doanh thu từ sản phẩm hoặc đơn hàng)
+            double totalRevenue = productDAO.getTotalRevenue(); 
+            request.setAttribute("totalRevenue", totalRevenue);
 
             // Forward dữ liệu đến trang JSP
             request.getRequestDispatcher("/admin/dashboard.jsp").forward(request, response);
@@ -52,19 +75,39 @@ public class AdminDashboardServlet extends HttpServlet {
 
         try {
             if ("deleteUser".equals(action)) {
-                int userId = Integer.parseInt(request.getParameter("userId"));
-                boolean isDeleted = userDAO.deleteUser(userId);
+                String userIdStr = request.getParameter("userId");
 
-                if (isDeleted) {
-                    request.setAttribute("message", "Xóa người dùng thành công.");
+                if (userIdStr != null && !userIdStr.isEmpty()) {
+                    try {
+                        int userId = Integer.parseInt(userIdStr);
+                        boolean isDeleted = userDAO.deleteUser(userId);
+
+                        if (isDeleted) {
+                            request.setAttribute("message", "Xóa người dùng thành công.");
+                        } else {
+                            request.setAttribute("error", "Không thể xóa người dùng.");
+                        }
+                    } catch (NumberFormatException e) {
+                        request.setAttribute("error", "ID người dùng không hợp lệ.");
+                    }
                 } else {
-                    request.setAttribute("error", "Không thể xóa người dùng.");
+                    request.setAttribute("error", "Không có ID người dùng.");
                 }
-            } else if ("deleteProduct".equals(action)) {
-                int productId = Integer.parseInt(request.getParameter("productId"));
-                productDAO.deleteProduct(productId);
 
-                request.setAttribute("message", "Xóa sản phẩm thành công.");
+            } else if ("deleteProduct".equals(action)) {
+                String productIdStr = request.getParameter("productId");
+
+                if (productIdStr != null && !productIdStr.isEmpty()) {
+                    try {
+                        int productId = Integer.parseInt(productIdStr);
+                        productDAO.deleteProduct(productId);
+                        request.setAttribute("message", "Xóa sản phẩm thành công.");
+                    } catch (NumberFormatException e) {
+                        request.setAttribute("error", "ID sản phẩm không hợp lệ.");
+                    }
+                } else {
+                    request.setAttribute("error", "Không có ID sản phẩm.");
+                }
             }
 
             // Tải lại dữ liệu sau khi xử lý
