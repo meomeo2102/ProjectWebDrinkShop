@@ -309,4 +309,21 @@ public class ProductDAO {
         }
         return list;
    }
+    	public double getTotalRevenue() {
+		double totalRevenue = 0;
+		String query = "SELECT SUM(price) AS totalRevenue FROM products"; // Hoặc có thể tính doanh thu từ đơn hàng
+		try (Connection connection = DBConnectionPool.getDataSource().getConnection();
+				Statement statement = connection.createStatement();
+				ResultSet rs = statement.executeQuery(query)) {
+
+			if (rs.next()) {
+				totalRevenue = rs.getDouble("totalRevenue");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return totalRevenue;
+	}
+
+}
 }
