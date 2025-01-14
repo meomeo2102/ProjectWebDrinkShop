@@ -71,30 +71,33 @@ public class UserDAO {
         }
         return null;
     }
-	public List<User> getAllUsers() {
-    List<User> users = new ArrayList<>();
-    String sql = "SELECT * FROM users";
-    try (PreparedStatement ps = con.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
-        while (rs.next()) {
-            users.add(getUserRs(rs)); // Sử dụng phương thức getUserRs để ánh xạ
+	  // Lấy tất cả người dùng
+    public List<User> getAllUsers() throws SQLException {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT * FROM users";
+        try (PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                users.add(getUserRs(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return users;
     }
-    return users;
-}
-	public boolean deleteUser(int id) {
-    String sql = "DELETE FROM users WHERE id = ?";
-    try (PreparedStatement ps = con.prepareStatement(sql)) {
-        ps.setInt(1, id);
-        int rows = ps.executeUpdate();
-        return rows > 0;
-    } catch (SQLException e) {
-        e.printStackTrace();
+
+    // Xóa người dùng theo ID
+    public boolean deleteUser(int id) {
+        String sql = "DELETE FROM users WHERE id = ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
-    return false;
-}
 	public boolean updateUser(User user) {
     String sql = "UPDATE users SET username=?, email=?, address=?, phone_number=?, is_admin=? WHERE id=?";
     try (PreparedStatement ps = con.prepareStatement(sql)) {
