@@ -20,48 +20,39 @@ import java.util.List;
 public class AdminDashboardServlet extends HttpServlet {
     private UserDAO userDAO;
     private ProductDAO productDAO;
-    private CategoryDAO categoryDAO;  // Khai báo CategoryDAO
+    private CategoryDAO categoryDAO;
 
     @Override
     public void init() throws ServletException {
         Connection connection = (Connection) getServletContext().getAttribute("DBConnection");
         userDAO = new UserDAO(connection);
         productDAO = new ProductDAO(connection);
-        categoryDAO = new CategoryDAO();  // Khởi tạo CategoryDAO
+        categoryDAO = new CategoryDAO(connection);
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            // Lấy danh sách tất cả người dùng
+            // Lấy danh sách tất cả người dùng, sản phẩm, danh mục
             List<User> userList = userDAO.getAllUsers();
-            request.setAttribute("userList", userList);
-
-            // Lấy danh sách tất cả sản phẩm
             List<Product> productList = productDAO.getAllProducts();
-            request.setAttribute("productList", productList);
-
-            // Lấy danh sách tất cả danh mục
             List<Category> categoryList = categoryDAO.getAllCategories();
+
+            // Gán thuộc tính cho JSP
+            request.setAttribute("userList", userList);
+            request.setAttribute("productList", productList);
             request.setAttribute("categoryList", categoryList);
 
-            // Tính tổng số sản phẩm
-            int totalProducts = productList.size(); 
-            request.setAttribute("totalProducts", totalProducts);
+            // Tính toán tổng
+            request.setAttribute("totalProducts", (productList != null) ? productList.size() : 0);
+            request.setAttribute("totalUsers", (userList != null) ? userList.size() : 0);
+            request.setAttribute("totalCategories", (categoryList != null) ? categoryList.size() : 0);
 
-            // Tính tổng số người dùng
-            List<User> totalUsers = userDAO.getAllUsers();
-            request.setAttribute("totalUsers", totalUsers);
-
-            // Tính tổng số danh mục
-            int totalCategories = categoryList.size(); 
-            request.setAttribute("totalCategories", totalCategories);
-
-            // Tính doanh thu (nếu có thông tin doanh thu từ sản phẩm hoặc đơn hàng)
-            double totalRevenue = productDAO.getTotalRevenue(); 
+            // Tính doanh thu
+            double totalRevenue = productDAO.getTotalRevenue();
             request.setAttribute("totalRevenue", totalRevenue);
 
-            // Forward dữ liệu đến trang JSP
+            // Forward đến trang JSP
             request.getRequestDispatcher("/admin/dashboard.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -77,42 +68,39 @@ public class AdminDashboardServlet extends HttpServlet {
             if ("deleteUser".equals(action)) {
                 String userIdStr = request.getParameter("userId");
 
-                if (userIdStr != null && !userIdStr.isEmpty()) {
-                    try {
-                        int userId = Integer.parseInt(userIdStr);
-                        boolean isDeleted = userDAO.deleteUser(userId);
+                if (userIdStr == null || userIdStr.isEmpty()) {
+                    request.setAttribute("error", "ID người dùng không hợp lệ.");
+                    doGet(request, response);
+                    return;
+                }
 
-                        if (isDeleted) {
-                            request.setAttribute("message", "Xóa người dùng thành công.");
-                        } else {
-                            request.setAttribute("error", "Không thể xóa người dùng.");
-                        }
-                    } catch (NumberFormatException e) {
-                        request.setAttribute("error", "ID người dùng không hợp lệ.");
-                    }
+                int userId = Integer.parseInt(userIdStr);
+                if (userDAO.deleteUser(userId)) {
+                    request.setAttribute("message", "Xóa người dùng thành công.");
                 } else {
-                    request.setAttribute("error", "Không có ID người dùng.");
+                    request.setAttribute("error", "Không thể xóa người dùng.");
                 }
 
             } else if ("deleteProduct".equals(action)) {
                 String productIdStr = request.getParameter("productId");
 
-                if (productIdStr != null && !productIdStr.isEmpty()) {
-                    try {
-                        int productId = Integer.parseInt(productIdStr);
-                        productDAO.deleteProduct(productId);
-                        request.setAttribute("message", "Xóa sản phẩm thành công.");
-                    } catch (NumberFormatException e) {
-                        request.setAttribute("error", "ID sản phẩm không hợp lệ.");
-                    }
-                } else {
-                    request.setAttribute("error", "Không có ID sản phẩm.");
+                if (productIdStr == null || productIdStr.isEmpty()) {
+                    request.setAttribute("error", "ID sản phẩm không hợp lệ.");
+                    doGet(request, response);
+                    return;
                 }
+
+                int productId = Integer.parseInt(productIdStr);
+                productDAO.deleteProduct(productId);
+                request.setAttribute("message", "Xóa sản phẩm thành công.");
             }
 
-            // Tải lại dữ liệu sau khi xử lý
+            // Tải lại dữ liệu
             doGet(request, response);
 
+        } catch (NumberFormatException e) {
+            request.setAttribute("error", "ID không hợp lệ.");
+            doGet(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Đã xảy ra lỗi khi xử lý yêu cầu.");
