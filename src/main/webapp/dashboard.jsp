@@ -1,6 +1,9 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
 <head>
-    <title>Dashboard Admin</title>
+    <title>Admin Dashboard</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -61,6 +64,21 @@
             font-size: 18px;
             color: #555;
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+        form {
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -79,6 +97,7 @@
     </nav>
     <main>
         <h2>Chào mừng bạn đến với Admin Dashboard</h2>
+
         <div class="card">
             <h3>Tổng số sản phẩm</h3>
             <p>${totalProducts}</p>
@@ -95,6 +114,61 @@
             <h3>Doanh thu hôm nay</h3>
             <p>${totalRevenue}</p>
         </div>
+
+        <h3>User List</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <c:forEach var="user" items="${userList}">
+                    <tr>
+                        <td>${user.id}</td>
+                        <td>${user.username}</td>
+                        <td>
+                            <form action="/admin/dashboard" method="post">
+                                <input type="hidden" name="action" value="deleteUser">
+                                <input type="hidden" name="userId" value="${user.id}">
+                                <input type="submit" value="Delete">
+                            </form>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
+
+        <h3>Product List</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <c:forEach var="product" items="${productList}">
+                    <tr>
+                        <td>${product.id}</td>
+                        <td>${product.name}</td>
+                        <td>${product.price}</td>
+                        <td>
+                            <form action="/admin/dashboard" method="post">
+                                <input type="hidden" name="action" value="deleteProduct">
+                                <input type="hidden" name="productId" value="${product.id}">
+                                <input type="submit" value="Delete">
+                            </form>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
+
     </main>
 </body>
 </html>
