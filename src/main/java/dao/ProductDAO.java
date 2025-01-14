@@ -11,7 +11,11 @@ import models.Category;
 import models.Product;
 
 public class ProductDAO {
+    private Connection connection;
 
+    public ProductDAO(Connection connection) {
+        this.connection = connection;
+    }
 
 
     // Constructor chứa tham số Connection
