@@ -43,7 +43,7 @@ public class AdminDashboardServlet extends HttpServlet {
             request.setAttribute("productList", productList);
             request.setAttribute("categoryList", categoryList);
 
-            // Tính toán tổng
+            // Gán thuộc tính cho tổng số sản phẩm
             request.setAttribute("totalProducts", (productList != null) ? productList.size() : 0);
             request.setAttribute("totalUsers", (userList != null) ? userList.size() : 0);
             request.setAttribute("totalCategories", (categoryList != null) ? categoryList.size() : 0);
@@ -51,6 +51,9 @@ public class AdminDashboardServlet extends HttpServlet {
             // Tính doanh thu
             double totalRevenue = productDAO.getTotalRevenue();
             request.setAttribute("totalRevenue", totalRevenue);
+
+            // Gửi danh sách sản phẩm vào JSP
+            request.setAttribute("products", productList);
 
             // Forward đến trang JSP
             request.getRequestDispatcher("/admin/dashboard.jsp").forward(request, response);
